@@ -4,7 +4,7 @@ module TMDb
 
     # Movie attributes
     ATTRIBUTES = :id, :adult, :backdrop_path, :belongs_to_collection, :budget,
-                 :genres, :homepage, :imdb_id, :original_title, :overview,
+                 :cast, :crew, :genres, :homepage, :imdb_id, :original_title, :overview,
                  :popularity, :poster_path, :production_companies, :runtime,
                  :production_countries, :release_date, :revenue, :spoken_languages,
                  :status, :tagline, :title, :vote_average, :vote_count
@@ -12,6 +12,22 @@ module TMDb
     attr_reader *ATTRIBUTES
 
     # Public: Get the basic movie information for a specific movie ID.
+    #
+    # id      - The ID of the movie.
+    # options - The hash options used to filter the search (default: {}):
+    #           :language - Language of the result data (ISO 639-1 codes)
+    #                       (default: en).
+    #
+    # Examples
+    #
+    # TMDb::Movie.find(68721)
+    # TMDb::Movie.find(68721, language: 'pt')
+    def self.find(id, options = {})
+      res = get("/movie/#{id}", query: options)
+      res.success? ? Movie.new(res) : bad_response(res)
+    end
+
+    # Public: Get the cast information for a specific movie id.
     #
     # id      - The ID of the movie.
     # options - The hash options used to filter the search (default: {}):
